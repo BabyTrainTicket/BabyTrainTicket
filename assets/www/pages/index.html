@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>BabyTrainTicket-Phone Ticket System</title>
+		<link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.0.min.css" />
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		<script type="text/javascript" src="../js/jquery.mobile-1.0.min.js"></script>
+		<script type="text/javascript" src="../js/phonegap-1.3.0.js"></script>
+		<script type="text/javascript">
+			/*document.addEventListener("deviceready", onDeviceReady, false);
+			 function onDeviceReady() {
+			 $('#btnLogin').bind('click', function() {
+			 if(validateData()){
+			 alert('login Access');
+			 }
+			 });
+			 $('#txtAuthcode').live('focus', function(event) {
+			 if($('#imgAuthcode').prop('src') == ''){
+			 $('#imgAuthcode').prop('src','https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=lrand');
+			 }
+			 });
+			 }*/
+			var authcodeUrl = 'https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=lrand', 
+				loginUrl = 'https://dynamic.12306.cn/otsweb/loginAction.do?method=login';
+
+			$('#mainPage').live('pageinit', function() {
+				$('#btnLogin').bind('click', function() {
+					if(validateData()) {
+						login();
+						$(this).button('disable');
+					}
+				});
+				$('#txtAuthcode').live('focus', function() {
+					var $imgAuthcode = $('#imgAuthcode');
+					if($imgAuthcode.prop('src') == '') {
+						$imgAuthcode.prop('src', authcodeUrl);
+						$('#lblAuthcodeLoading').text('Authcode loading......');
+						$imgAuthcode.bind('load', function() {
+							if(this.complete == true) {
+								$imgAuthcode.show();
+								$('#lblAuthcodeLoading').hide();
+							}
+						});
+					}
+				});
+				$('#imgAuthcode').bind('click', function() {
+					var randomNum = new Date().getTime();
+					var newAuthcodeUrl = authcodeUrl + "&randomDate=" + randomNum;
+					var $newImgAuthcode = $(this).removeAttr('src').clone(true);
+					var $lblAuthcode = $('#lblAuthcodeLoading');
+					$newImgAuthcode.prop('src', newAuthcodeUrl);
+					$lblAuthcode.text('Authcode loading......');
+					$newImgAuthcode.bind('load', function() {
+						if(this.complete == true) {
+							$('#imgAuthcode').remove();
+							$lblAuthcode.after($newImgAuthcode);
+							$('#lblAuthcodeLoading').hide();
+						}
+					});
+				});
+			});
+			function validateData() {
+				if($('#txtAccount').val() == '' || $('#txtPass').val() == '' || $('#txtAuthcode').val() == '') {
+					alert('Please input the empty field.');
+					return false;
+				}
+				return true;
+			}
+			function login(){
+				$.ajax({
+					type: 'post',
+					url: loginUrl,
+					data: {
+						'loginUser.user_name': $('#txtAccount').val(), 
+						'user.password': $('#txtAccount').val(),
+						 'randCode': $('#txtAuthcode').val()
+						 },
+					timeout: 30000,
+					success: function(msg){
+						if ( msg.indexOf('请输入正确的验证码') > -1 ) {
+							alert('请输入正确的验证码！');
+						}
+						else if ( msg.indexOf('当前访问用户过多') > -1 || msg.match(/var\s+isLogin\s*=\s*false/i)) {
+							reLogin('Curent visit users too much.');
+						}
+						else {
+							showMessage('登录成功，开始查询车票吧！');
+						};
+					},
+					error: function(msg){
+						reLogin(msg);
+					}
+				});
+			}
+			var loginCount = 0;
+			function reLogin (msg) {
+				showMessage('Login time:'+(++loginCount)+'    Current Message:'+msg);
+				setTimeout(login,2000);
+			}
+			function showMessage (msg) {
+			  $('#loginInfo').text(msg);
+			}
+		</script>
+		<style type="text/css">
+			#imgAuthcode {
+				margin: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div data-role="page" id='mainPage'>
+			<div data-role="header">
+				<h1>BabyTrainTicket</h1>
+			</div>
+			<div data-role="content">
+				<div class="ui-body ui-body-c">
+					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+						<!--<label for="txtAccount" class="ui-input-text">Login Name:</label>-->
+						<input type="text" name="txtAccount" id="txtAccount" placeholder="Login Name"
+						class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+					</div>
+					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+						<!--<label for="txtPass" class="ui-input-text">Password:</label>-->
+						<input type="password" name="txtPass" id="txtPass" placeholder="Password"
+						class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+					</div>
+					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+						<input type="text" name="txtAuthcode" id="txtAuthcode" placeholder="Authcode"
+						maxlength="4" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset" />
+						<label id="lblAuthcodeLoading"></label>
+						<img id="imgAuthcode" title="click to refresh it." style="display: none;" />
+					</div>
+					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+						<a id="btnLogin" data-role="button">Login</a>
+					</div>
+				</div>
+			</div>
+			<div data-role="footer">
+				<div id="loginInfo"></div>
+				<h4>Phone client to book train ticket.</h4>
+			</div>
+		</div>
+	</body>
+</html>
