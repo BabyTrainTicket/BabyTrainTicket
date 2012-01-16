@@ -78,6 +78,7 @@
 						 },
 					timeout: 30000,
 					success: function(msg){
+						alert(msg);
 						if ( msg.indexOf('请输入正确的验证码') > -1 ) {
 							alert('请输入正确的验证码！');
 						}
@@ -95,11 +96,11 @@
 			}
 			var loginCount = 0;
 			function reLogin (msg) {
-				showMessage('Login time:'+(++loginCount)+'    Current Message:'+msg);
+				showMessage('Login time:<strong>'+(++loginCount)+'</strong><br />    Current Message:'+msg);
 				setTimeout(login,2000);
 			}
 			function showMessage (msg) {
-			  $('#loginInfo').text(msg);
+			  $('#loginInfo').html(msg);
 			}
 		</script>
 		<style type="text/css">
@@ -132,7 +133,7 @@
 						<img id="imgAuthcode" title="click to refresh it." style="display: none;" />
 					</div>
 					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
-						<a id="btnLogin" data-role="button">Login</a>
+						<Button id="btnLogin" data-role="button">Login</Button>
 					</div>
 				</div>
 			</div>
