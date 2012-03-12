@@ -1,8 +1,10 @@
 package org.babysuper.ticket;
 
+import org.apache.cordova.DroidGap;
+
 import android.os.Bundle;
 
-import com.phonegap.DroidGap;
+
 
 public class AppMainActivity extends DroidGap {
 	
