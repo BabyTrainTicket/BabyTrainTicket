@@ -46,7 +46,7 @@
         function generateStations($selectId) {
             if (typeof ticketStationArr == 'undefined')return;
             var $SlStationsEle = $($selectId);
-            for (var i = 0; i < 6; i++) {
+            for (var i = 0; i < 25; i++) {
                 var cityItemArr = ticketStationArr[i];
                 var optionStr = '<option value="' + cityItemArr[3] + '">' + cityItemArr[1] + '</option>';
                 $SlStationsEle.append(optionStr);

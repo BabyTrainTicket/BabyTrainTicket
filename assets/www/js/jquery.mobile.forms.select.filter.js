@@ -49,14 +49,13 @@ $('select').live('vclick', function(){
 				//Change val as lastval for next execution
 				$this.jqmData( "lastval" , val );
 
-                var change = val.replace(new RegExp("^" + lastval), "");
+                var changeVal = val.replace(new RegExp("^" + lastval), "");
 
-				if( val.length < lastval.length || change.length != ( val.length - lastval.length ) ){
+				if( val.length < lastval.length || changeVal.length != ( val.length - lastval.length ) ){
 
 					//Removed chars or pasted something totaly different, check all items
 					listItems = list.children();
 				} else {
-
 					//Only chars added, not removed, only use visible subset
 					listItems = list.children( ":not(.ui-screen-hidden)" );
 				}

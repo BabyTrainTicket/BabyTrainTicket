@@ -24,7 +24,8 @@
             nativeMenu: true,
             initSelector: "select:not(:jqmData(role='slider'))",
             forceDialog : false,
-            filterPlaceholder:'Filter items...'
+            filterPlaceholder:'Filter items...',
+            filterSearch:undefined
         },
         _create: function() {
 
