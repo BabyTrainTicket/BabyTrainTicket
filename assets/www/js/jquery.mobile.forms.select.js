@@ -378,8 +378,13 @@
                     classes.push( "ui-disabled" );
                     extraAttrs.push( "aria-disabled='true'" );
                 }
+                var opFilterText = $this.jqmData('filtertext');
+                var liStr = "<li data-" + $.mobile.ns + "option-index='" + i + "' data-" + $.mobile.ns + "icon='"+
+                    dataIcon +"' class='"+ classes.join(" ") + "' " + extraAttrs.join(" ") +
+                    (opFilterText == ''?'':'data-'+$.mobile.ns+'filtertext="'+opFilterText+'" ')
+                    +">"+ anchor +"</li>";
 
-                lis.push( "<li data-" + $.mobile.ns + "option-index='" + i + "' data-" + $.mobile.ns + "icon='"+ dataIcon +"' class='"+ classes.join(" ") + "' " + extraAttrs.join(" ") +">"+ anchor +"</li>" )
+                lis.push( liStr )
             });
 
             self.list.html( lis.join(" ") );

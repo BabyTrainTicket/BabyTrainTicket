@@ -36,74 +36,92 @@ $('select').live('vclick', function(){
 			})
 			.attr( "data-" + $.mobile.ns + "type", "search" )
 			.jqmData( "lastval", "" )
-			.bind( "keyup change", function() {
+            /*.bind("keyup change", function () {
 
-				var $this = $(this),
+                var $this = $(this),
                     val = this.value.toLowerCase(),
-					listItems=null,
-					lastval = $this.jqmData("lastval")+"",
+                    listItems = null,
+                    lastval = $this.jqmData("lastval") + "",
                     childItems = false,
                     itemtext = "",
                     item;
 
-				//Change val as lastval for next execution
-				$this.jqmData( "lastval" , val );
+                //Change val as lastval for next execution
+                $this.jqmData("lastval", val);
 
                 var changeVal = val.replace(new RegExp("^" + lastval), "");
 
-				if( val.length < lastval.length || changeVal.length != ( val.length - lastval.length ) ){
+                if (val.length < lastval.length || changeVal.length != ( val.length - lastval.length )) {
+                    //Removed chars or pasted something totaly different, check all items
+                    listItems = list.children();
+                } else {
+                    //Only chars added, not removed, only use visible subset
+                    listItems = list.children(":not(.ui-screen-hidden)");
+                }
 
-					//Removed chars or pasted something totaly different, check all items
-					listItems = list.children();
-				} else {
-					//Only chars added, not removed, only use visible subset
-					listItems = list.children( ":not(.ui-screen-hidden)" );
-				}
+                if (val) {
 
-				if ( val ) {
+                    // This handles hiding regular rows without the text we search for
+                    // and any list dividers without regular rows shown under it
 
-					// This handles hiding regular rows without the text we search for
-					// and any list dividers without regular rows shown under it
+                    for (var i = listItems.length - 1; i >= 0; i--) {
+                        item = $(listItems[i]);
+                        itemtext = item.jqmData("filtertext") || item.text();
 
-					for ( var i = listItems.length - 1; i >= 0; i-- ) {
-						item = $( listItems[i] );
-					    itemtext = item.jqmData( "filtertext" ) || item.text();
+                        if (item.is("li:jqmData(role=list-divider)")) {
 
-						if ( item.is( "li:jqmData(role=list-divider)" ) ) {
+                            item.toggleClass("ui-filter-hidequeue", !childItems);
 
-						item.toggleClass( "ui-filter-hidequeue" , !childItems );
+                            // New bucket!
+                            childItems = false;
 
-						// New bucket!
-                        childItems = false;
+                        } else if (itemtext.toLowerCase().indexOf(val) === -1) {
 
-						} else if ( itemtext.toLowerCase().indexOf( val ) === -1) {
+                            //mark to be hidden
+                            item.toggleClass("ui-filter-hidequeue", true);
+                        } else {
 
-							//mark to be hidden
-						    item.toggleClass( "ui-filter-hidequeue" , true );
-						} else {
+                            // There"s a shown item in the bucket
+                            childItems = true;
+                        }
+                    }
 
-						    // There"s a shown item in the bucket
-							childItems = true;
-						}
-					}
+                    // Show items, not marked to be hidden
+                    listItems
+                        .filter(":not(.ui-filter-hidequeue)")
+                        .toggleClass("ui-screen-hidden", false);
 
-				// Show items, not marked to be hidden
-				listItems
-					.filter( ":not(.ui-filter-hidequeue)" )
-					.toggleClass( "ui-screen-hidden", false );
+                    // Hide items, marked to be hidden
+                    listItems
+                        .filter(".ui-filter-hidequeue")
+                        .toggleClass("ui-screen-hidden", true)
+                        .toggleClass("ui-filter-hidequeue", false);
 
-				// Hide items, marked to be hidden
-			    listItems
-					.filter( ".ui-filter-hidequeue" )
-					.toggleClass( "ui-screen-hidden", true )
-					.toggleClass( "ui-filter-hidequeue", false );
+                } else {
 
-				}else{
+                    //filtervalue is empty => show all
+                    listItems.toggleClass("ui-screen-hidden", false);
+                }
+            })*/
+            .bind('keyup change',function(){
+                var $this = $(this),
+                    val = this.value.toLowerCase(),
+                    lastval = $this.jqmData("lastval")+"";
 
-					//filtervalue is empty => show all
-				listItems.toggleClass( "ui-screen-hidden", false );
-				}
-			})
+                $this.jqmData("lastval", val);
+
+                if(val && val.length != lastval.length){
+                    var filterSearch = select.data('selectmenu').options.filterSearch;
+                    if(filterSearch != undefined && typeof(filterSearch) == 'function'){
+                        select.empty();
+                        $.each(filterSearch(val),function(){
+                            select.append(new Option(this.label,this.text));
+                        });
+                        select.selectmenu('refresh');
+                        list.listview('refresh');
+                    }
+                }
+            })
 			.appendTo( wrapper )
 			.textinput();
 

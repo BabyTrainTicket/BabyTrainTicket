@@ -20,6 +20,7 @@
         $('#searchPage').live('pageinit', function () {
             initTicketStations();
             generateStations('#slSetOutStation');
+            generateStations('#slArrivalStation');
         });
 
         function initTicketStations() {
@@ -48,10 +49,24 @@
             var $SlStationsEle = $($selectId);
             for (var i = 0; i < 25; i++) {
                 var cityItemArr = ticketStationArr[i];
-                var optionStr = '<option value="' + cityItemArr[3] + '">' + cityItemArr[1] + '</option>';
+                var optionStr = '<option value="' + cityItemArr[3] + '" data-filtertext="' + cityItemArr[0] +
+                        cityItemArr[1] + '">' + cityItemArr[1] + '</option>';
                 $SlStationsEle.append(optionStr);
             }
+            $SlStationsEle.selectmenu({filterSearch:filterSearch});
             $SlStationsEle.selectmenu('refresh');
+        }
+
+        function filterSearch(keyWord) {
+            var searchResults = [];
+            if (keyWord != undefined || keyWord != null || typeof(ticketStationArr) != 'undefined'){
+                searchResults = $.map(ticketStationArr,function(cityItemArr){
+                    if((cityItemArr[0]+cityItemArr[1]).indexOf(keyWord) == -1)return null;
+                    return {label:cityItemArr[1],text:cityItemArr[3]};
+                });
+            }
+            return searchResults;
+
         }
     </script>
 </head>
@@ -67,7 +82,7 @@
             </select>
             <!--<input type="search" id="txtArrivalStation" placeholder="到达站" />-->
             <select id="slArrivalStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
-                     data-filter-placeholder="到达站" data-icon="search" data-filter="true">
+                    data-filter-placeholder="到达站" data-icon="search" data-filter="true">
                 <option>到达站</option>
             </select>
         </div>
