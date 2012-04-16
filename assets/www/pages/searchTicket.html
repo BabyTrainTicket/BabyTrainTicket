@@ -4,10 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BabyTrainTicket-Phone Ticket System</title>
-    <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.0.1.min.css"/>
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
     <script type="text/javascript" src="../js/jquery.js"></script>
-    <script type="text/javascript" src="../js/jquery.mobile-1.0.1.min.js"></script>
-    <script type="text/javascript" src="../js/cordova-1.5.0.js"></script>
+    <script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
+    <script type="text/javascript" src="../js/cordova-1.6.0.js"></script>
     <script type="text/javascript" src="../js/TrainStations.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.forms.select.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.forms.select.filter.js"></script>
@@ -66,9 +66,17 @@
                 });
             }
             return searchResults;
+        }
+
+        function search(){
 
         }
     </script>
+    <style type="text/css">
+        .ui-select {
+            margin:5px auto;
+        }
+    </style>
 </head>
 <body>
 <div id="searchPage" data-role="page" data-transition="slidedown">
@@ -77,12 +85,12 @@
         <div data-role="fieldcontain">
             <!--<input type="search" id="txtSetOutStation" placeholder="出发站" />-->
             <select id="slSetOutStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
-                    data-filter-placeholder="出发站" data-icon="search" data-filter="true">
+                    data-filter-placeholder="出发站" data-icon="search" data-filter="true" data-inline="false">
                 <option>出发站</option>
             </select>
             <!--<input type="search" id="txtArrivalStation" placeholder="到达站" />-->
             <select id="slArrivalStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
-                    data-filter-placeholder="到达站" data-icon="search" data-filter="true">
+                    data-filter-placeholder="到达站" data-icon="search" data-filter="true" data-inline="false">
                 <option>到达站</option>
             </select>
         </div>
