@@ -7,7 +7,7 @@
 		<link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css" />
 		<script type="text/javascript" src="../js/jquery.js"></script>
 		<script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
-		<script type="text/javascript" src="../js/cordova-1.6.0.js"></script>
+		<script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
 		<script type="text/javascript">
 			/*document.addEventListener("deviceready", onDeviceReady, false);
 			 function onDeviceReady() {
@@ -95,10 +95,15 @@
 						else if ( msg.indexOf('当前访问用户过多') > -1 || msg.match(/var\s+isLogin\s*=\s*false/i)) {
 							reLogin('当前访问用户过多.');
 						}
-						else {
+						else if(msg.match(/var\s+isLogin\s*=\s*true/i)) {
 							showMessage('登录成功，开始查询车票吧！');
                             $.mobile.changePage('searchTicket.html',{transition:'slideup',reverse:false});
-						};
+						}
+                        else {
+                            msg = msg.match(/var\s+message\s*=\s*"([^"]*)/);
+                            if(msg && msg[1]) alert(msg && msg[1]);
+                            else reLogin('未知错误');
+                        };
 						//$('#btnLogin').button('enable');
 					},
 					error: function(msg){

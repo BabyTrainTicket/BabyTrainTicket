@@ -7,7 +7,7 @@
     <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
     <script type="text/javascript" src="../js/jquery.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
-    <script type="text/javascript" src="../js/cordova-1.6.0.js"></script>
+    <script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
     <script type="text/javascript" src="../js/TrainStations.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.forms.select.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.forms.select.filter.js"></script>
@@ -21,6 +21,7 @@
             initTicketStations();
             generateStations('#slSetOutStation');
             generateStations('#slArrivalStation');
+            $('#btnSearch').bind('click',search);
         });
 
         function initTicketStations() {
@@ -69,7 +70,27 @@
         }
 
         function search(){
+            var searchUrl = 'https://dynamic.12306.cn/otsweb/order/querySingleAction.do?method=queryLeftTicket';
+            var queryParams = {};
+            queryParams['orderRequest.train_date'] = $('#txtSetOutDate').val().trim();
+            queryParams['orderRequest.from_station_telecode'] = $('#slSetOutStation').val().trim();
+            queryParams['orderRequest.to_station_telecode'] = $('#slArrivalStation').val().trim();
+            queryParams['orderRequest.train_no'] = $('#txtTrainNumber').val().trim();
+            queryParams['trainPassType'] = 'QB';
+            queryParams['trainClass'] = 'QB#D#Z#T#K#QT#';
+            queryParams['includeStudent'] = '00';
+            queryParams['seatTypeAndNum'] = '';
+            queryParams['orderRequest.start_time_str'] = '00:00--24:00';
 
+            $.ajax({
+                url:searchUrl,
+                type:'get',
+                data:queryParams,
+                dataType:'text',
+                success:function(result){
+                    alert(result);
+                }
+            });
         }
     </script>
     <style type="text/css">
@@ -96,7 +117,7 @@
         </div>
         <div data-role="fieldcontain">
             <input type='date' id='txtSetOutDate' data-role='datebox'
-                   data-options='{"mode": "calbox", "dateFormat": "YYYY年mm月dd日","afterToday":true,"maxDays":10}'
+                   data-options='{"mode": "calbox", "dateFormat": "YYYY-mm-dd","afterToday":true,"maxDays":10}'
                    placeholder="出发日期"/>
         </div>
         <div data-role="fieldcontain">
