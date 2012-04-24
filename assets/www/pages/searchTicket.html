@@ -6,6 +6,7 @@
     <title>BabyTrainTicket-Phone Ticket System</title>
     <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
     <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/json2.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
     <script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
     <script type="text/javascript" src="../js/TrainStations.js"></script>
@@ -26,7 +27,7 @@
 
         function initTicketStations() {
             var ticketStations_key = 'ticketStations';
-            ticketStationArr = JSON.parse(localStorage.getItem(ticketStations_key));
+            ticketStationArr = JSON.parse(window.localStorage.getItem(ticketStations_key));
             if (ticketStationArr != null && typeof ticketStationArr != 'undefined')return;
             ticketStationArr = getTicketStations();
             window.localStorage.setItem(ticketStations_key, JSON.stringify(ticketStationArr));
