@@ -1,173 +1,191 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>BabyTrainTicket-Phone Ticket System</title>
-		<link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css" />
-		<script type="text/javascript" src="../js/jquery.js"></script>
-		<script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
-		<script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
-		<script type="text/javascript">
-			/*document.addEventListener("deviceready", onDeviceReady, false);
-			 function onDeviceReady() {
-			 $('#btnLogin').bind('click', function() {
-			 if(validateData()){
-			 alert('login Access');
-			 }
-			 });
-			 $('#txtAuthcode').live('focus', function(event) {
-			 if($('#imgAuthcode').prop('src') == ''){
-			 $('#imgAuthcode').prop('src','https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=lrand');
-			 }
-			 });
-			 }*/
-			var authcodeUrl = 'https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=lrand', 
-				loginUrl = 'https://dynamic.12306.cn/otsweb/loginAction.do?method=login',
-				reLoginEle;
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BabyTrainTicket-Phone Ticket System</title>
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
+    <script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
+    <script type="text/javascript">
+        /*document.addEventListener("deviceready", onDeviceReady, false);
+         function onDeviceReady() {
+         $('#btnLogin').bind('click', function() {
+         if(validateData()){
+         alert('login Access');
+         }
+         });
+         $('#txtAuthcode').live('focus', function(event) {
+         if($('#imgAuthcode').prop('src') == ''){
+         $('#imgAuthcode').prop('src','https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=lrand');
+         }
+         });
+         }*/
+        var authcodeUrl = 'https://dynamic.12306.cn/otsweb/passCodeAction.do?rand=lrand',
+                loginUrl = 'https://dynamic.12306.cn/otsweb/loginAction.do?method=login',
+                reLoginEle;
 
-			$('#mainPage').live('pageinit', function() {
-				$('#btnLogin').bind('click', function() {
-					if(validateData()) {
-						login();
-						//$(this).button('disable');
-					}
-					$.mobile.changePage('#loginInfoPage',{transition:'slidedown',role:'dialog'});
-				});
-				$('#txtAuthcode').live('focus', function() {
-					var $imgAuthcode = $('#imgAuthcode');
-					if($imgAuthcode.prop('src') == '') {
-						$imgAuthcode.prop('src', authcodeUrl);
-						$('#lblAuthcodeLoading').text('验证码加载中......');
-						$imgAuthcode.bind('load', function() {
-							if(this.complete == true) {
-								$imgAuthcode.show();
-								$('#lblAuthcodeLoading').hide();
-							}
-						});
-					}
-				});
-				$('#imgAuthcode').bind('click', function() {
-					var randomNum = new Date().getTime();
-					var newAuthcodeUrl = authcodeUrl + "&randomDate=" + randomNum;
-					var $newImgAuthcode = $(this).removeAttr('src').clone(true);
-					var $lblAuthcode = $('#lblAuthcodeLoading');
-					$newImgAuthcode.prop('src', newAuthcodeUrl);
-					$lblAuthcode.text('加载验证码中...');
-					$newImgAuthcode.bind('load', function() {
-						if(this.complete == true) {
-							$('#imgAuthcode').remove();
-							$lblAuthcode.after($newImgAuthcode);
-							$('#lblAuthcodeLoading').hide();
-						}
-					});
-				});
-			}).live( 'pageshow',function(event, ui){
-				if(reLoginEle) clearTimeout(reLoginEle);
-			});
-			function validateData() {
-				if($('#txtAccount').val() == '' || $('#txtPass').val() == '' || $('#txtAuthcode').val() == '') {
-					alert('Please input the empty field.');
-					return false;
-				}
-				return true;
-			}
-			function login(){
-				$.ajax({
-					type: 'post',
-					url: loginUrl,
-					data: {
-						'loginUser.user_name': $('#txtAccount').val(), 
-						'user.password': $('#txtPass').val(),
-						 'randCode': $('#txtAuthcode').val()
-						 },
-					timeout: 30000,
-					success: function(msg){
-						if ( msg.indexOf('请输入正确的验证码') > -1 ) {
-							alert('请输入正确的验证码！');
-						}
-						else if(msg.match(/密码输入错误,您还有\d次机会!/i)) {
-							alert('密码输入错误，请输入正确的密码');
-						}
-						else if( msg.match(/请稍候再试/i)){
-							alert('您的用户已经被锁定，请稍后再试!');
-						}
-						else if ( msg.indexOf('当前访问用户过多') > -1 || msg.match(/var\s+isLogin\s*=\s*false/i)) {
-							reLogin('当前访问用户过多.');
-						}
-						else if(msg.match(/var\s+isLogin\s*=\s*true/i)) {
-							showMessage('登录成功，开始查询车票吧！');
-                            $.mobile.changePage('searchTicket.html',{transition:'slideup',reverse:false});
-						}
-                        else {
-                            msg = msg.match(/var\s+message\s*=\s*"([^"]*)/);
-                            if(msg && msg[1]) alert(msg && msg[1]);
-                            else reLogin('未知错误');
-                        };
-						//$('#btnLogin').button('enable');
-					},
-					error: function(msg){
-						reLogin(msg);
-					}
-				});
-			}
-			var loginCount = 0;
-			function reLogin (msg) {
-				showMessage(msg);
-				reLoginEle = setTimeout(login,2000);
-			}
-			function showMessage (msg) {
-			  $('#loginInfoPage #loginTime').html('当前第<strong>'+ (++loginCount)+'</strong>次登录.');
-			  $('#loginInfoPage #loginInfoMsg').html(msg);
-			}
-		</script>
-		<style type="text/css">
-			#imgAuthcode {
-				margin: 5px 10px -10px;
-			}
-		</style>
-	</head>
-	<body>
-		<div data-role="page" id="mainPage">
-			<div data-role="header">
-				<h1>BabyTrainTicket</h1>
-			</div>
-			<div data-role="content">
-				<div class="ui-body ui-body-c">
-					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
-						<!--<label for="txtAccount" class="ui-input-text">Login Name:</label>-->
-						<input type="text" name="txtAccount" id="txtAccount" placeholder="用户名"
-						class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
-					</div>
-					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
-						<!--<label for="txtPass" class="ui-input-text">Password:</label>-->
-						<input type="password" name="txtPass" id="txtPass" placeholder="密码"
-						class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
-					</div>
-					<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
-						<input type="text" name="txtAuthcode" id="txtAuthcode" placeholder="验证码"
-						maxlength="4" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset" />
-						<label id="lblAuthcodeLoading"></label>
-						<img id="imgAuthcode" title="点击即可刷新验证码" style="display: none;" />
-					</div>
-                    <Button id="btnLogin" data-role="button">登录</Button>
-				</div>
-			</div>
-			<div data-role="footer">
-				<h4>Phone client to book train ticket.</h4>
-			</div>
-		</div>
-		<div id="loginInfoPage" data-role="dialog" data-transition="slidedown">
-			<div data-role="header"><h1>正在登录中...</h1></div>
-			<div data-role="content">
-				<div id="loginInfo">
-					<div id="loginTime"></div>
-					<div id="loginInfoMsg"></div>
-				</div>
-				<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
-					<a href="#mainPage" data-role="button" data-rel="back">取消登录</a>
-				</div>
-			</div>
-		</div>
-	</body>
+        $('#mainPage').live('pageinit',
+                function () {
+                    $('#btnLogin').bind('click', function () {
+                        if (validateData()) {
+                            login();
+                            $.mobile.changePage('#loginInfoPage', {transition:'slidedown', role:'dialog'});
+                        }
+                        return false;
+                    });
+                    $('#txtAuthcode').live('focus', function () {
+                        var $imgAuthcode = $('#imgAuthcode');
+                        if ($imgAuthcode.prop('src') == '') {
+                            $imgAuthcode.prop('src', authcodeUrl);
+                            $('#lblAuthcodeLoading').text('验证码加载中......');
+                            $imgAuthcode.bind('load', function () {
+                                if (this.complete == true) {
+                                    $imgAuthcode.show();
+                                    $('#lblAuthcodeLoading').hide();
+                                }
+                            });
+                        }
+                    });
+                    $('#imgAuthcode').bind('click', function () {
+                        var randomNum = new Date().getTime();
+                        var newAuthcodeUrl = authcodeUrl + "&randomDate=" + randomNum;
+                        var $newImgAuthcode = $(this).removeAttr('src').clone(true);
+                        var $lblAuthcode = $('#lblAuthcodeLoading');
+                        $newImgAuthcode.prop('src', newAuthcodeUrl);
+                        $lblAuthcode.text('加载验证码中...');
+                        $newImgAuthcode.bind('load', function () {
+                            if (this.complete == true) {
+                                $('#imgAuthcode').remove();
+                                $lblAuthcode.after($newImgAuthcode);
+                                $('#lblAuthcodeLoading').hide();
+                            }
+                        });
+                    });
+                    $('#btnTest').bind('click',function(){
+                        $.mobile.changePage('searchTicket.html', {
+                            transition:'slideup',
+                            reverse:false,
+                            changeHash:false,
+                            reloadPage:true,
+                            role:'page'
+                        });
+                    });
+                }).live('pageshow', function (event, ui) {
+                    if (reLoginEle) clearTimeout(reLoginEle);
+                });
+        function validateData() {
+            if ($('#txtAccount').val() == '' || $('#txtPass').val() == '' || $('#txtAuthcode').val() == '') {
+                alert('Please input the empty field.');
+                return false;
+            }
+            return true;
+        }
+        function login() {
+            $.ajax({
+                type:'post',
+                url:loginUrl,
+                data:{
+                    'loginUser.user_name':$('#txtAccount').val(),
+                    'user.password':$('#txtPass').val(),
+                    'randCode':$('#txtAuthcode').val()
+                },
+                timeout:30000,
+                success:function (msg) {
+                    if (msg.indexOf('请输入正确的验证码') > -1) {
+                        alert('请输入正确的验证码！');
+                    }
+                    else if (msg.match(/密码输入错误,您还有\d次机会!/i)) {
+                        alert('密码输入错误，请输入正确的密码');
+                    }
+                    else if (msg.match(/请稍候再试/i)) {
+                        alert('您的用户已经被锁定，请稍后再试!');
+                    }
+                    else if (msg.indexOf('当前访问用户过多') > -1 || msg.match(/var\s+isLogin\s*=\s*false/i)) {
+                        reLogin('当前访问用户过多.');
+                    }
+                    else if (msg.match(/var\s+isLogin\s*=\s*true/i)) {
+                        showMessage('登录成功，开始查询车票吧！');
+                        $.mobile.changePage('searchTicket.html', {
+                            transition:'slidedown',
+                            reverse:false,
+                            changeHash:false,
+                            reloadPage:true,
+                            role:'page'
+                        });
+                    }
+                    else {
+                        msg = msg.match(/var\s+message\s*=\s*"([^"]*)/);
+                        if (msg && msg[1]) alert(msg && msg[1]);
+                        else reLogin('未知错误');
+                    }
+                    //$('#btnLogin').button('enable');
+                },
+                error:function (msg) {
+                    reLogin(msg);
+                }
+            });
+        }
+        var loginCount = 0;
+        function reLogin(msg) {
+            showMessage(msg);
+            reLoginEle = setTimeout(login, 2000);
+        }
+        function showMessage(msg) {
+            $('#loginInfoPage #loginTime').html('当前第<strong>' + (++loginCount) + '</strong>次登录.');
+            $('#loginInfoPage #loginInfoMsg').html(msg);
+        }
+    </script>
+    <style type="text/css">
+        #imgAuthcode {
+            margin: 5px 10px -10px;
+        }
+    </style>
+</head>
+<body>
+<div data-role="page" id="mainPage">
+    <div data-role="header">
+        <h1>BabyTrainTicket</h1>
+    </div>
+    <div data-role="content">
+        <div class="ui-body ui-body-c">
+            <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                <!--<label for="txtAccount" class="ui-input-text">Login Name:</label>-->
+                <input type="text" name="txtAccount" id="txtAccount" placeholder="用户名"
+                       class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+            </div>
+            <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                <!--<label for="txtPass" class="ui-input-text">Password:</label>-->
+                <input type="password" name="txtPass" id="txtPass" placeholder="密码"
+                       class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset">
+            </div>
+            <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+                <input type="text" name="txtAuthcode" id="txtAuthcode" placeholder="验证码"
+                       maxlength="4" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset"/>
+                <label id="lblAuthcodeLoading"></label>
+                <img id="imgAuthcode" title="点击即可刷新验证码" style="display: none;"/>
+            </div>
+            <Button id="btnLogin" data-role="button">登录</Button>
+            <button id="btnTest" data-role="button">Test</button>
+            <a href="searchTicket.html" data-transition="slideup">Test Link</a>
+        </div>
+    </div>
+    <div data-role="footer">
+        <h4>Phone client to book train ticket.</h4>
+    </div>
+</div>
+<div id="loginInfoPage" data-role="dialog" data-transition="slidedown">
+    <div data-role="header"><h1>正在登录中...</h1></div>
+    <div data-role="content">
+        <div id="loginInfo">
+            <div id="loginTime"></div>
+            <div id="loginInfoMsg"></div>
+        </div>
+        <div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+            <a href="#mainPage" data-role="button" data-rel="back">取消登录</a>
+        </div>
+    </div>
+</div>
+</body>
 </html>

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test</title>
+    <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
+    <script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
+
+</head>
+<body>
+<div id="testPage" data-transition="slidedown">
+    <script type="text/javascript">
+        $('#testPage').live('pageinit', function () {
+            alert('testPage');
+            $('#btnTest').bind('click', function () {
+                $.mobile.changePage('searchTicket.html', {transition:'flow'});
+            })
+        });
+    </script>
+    <a href="test2.html" data-transition="slideup">Test Link</a>
+    <button id="btnTest" data-role="button">Test</button>
+</div>
+</body>
+</html>

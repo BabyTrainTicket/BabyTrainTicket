@@ -4,11 +4,11 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BabyTrainTicket-Phone Ticket System</title>
-    <link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
+    <!--<link type="text/css" rel="stylesheet" href="../css/jquery.mobile-1.1.0.min.css"/>
     <script type="text/javascript" src="../js/jquery.js"></script>
     <script type="text/javascript" src="../js/json2.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile-1.1.0.min.js"></script>
-    <script type="text/javascript" src="../js/cordova-1.6.1.js"></script>
+    <script type="text/javascript" src="../js/cordova-1.6.1.js"></script>-->
     <script type="text/javascript" src="../js/TrainStations.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.forms.select.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.forms.select.filter.js"></script>
@@ -16,13 +16,58 @@
     <link type="text/css" rel="stylesheet" href="../css/jquery.mobile.datebox.min.css"/>
     <script type="text/javascript" src="../js/jquery.mobile.datebox.min.js"></script>
     <script type="text/javascript" src="../js/jquery.mobile.datebox.i18n.zh-CN.utf8.js"></script>
+
+    <script src="http://debug.phonegap.com/target/target-script-min.js#BabyTicket"></script>
+    <style type="text/css">
+        .ui-select {
+            margin: 5px auto;
+        }
+    </style>
+</head>
+<body>
+<div id="searchPage" data-role="page" data-transition="slidedown">
+    <div data-role="header">
+        <a data-role="button" data-transition="slideup" data-theme="b" href="index.html"
+           data-icon="arrow-l" data-iconpos="left">
+            Logout
+        </a>
+
+        <h1>车票查询</h1>
+        <a id="btnShow" data-role="button" data-transition="slideup" data-theme="b" href="javascript:void(0);"
+           data-icon="refresh" data-iconpos="refresh">
+            Show
+        </a>
+    </div>
+    <div data-role="content">
+        <div data-role="fieldcontain">
+            <!--<input type="search" id="txtSetOutStation" placeholder="出发站" />-->
+            <select id="slSetOutStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
+                    data-filter-placeholder="出发站" data-icon="search" data-filter="true" data-inline="false">
+                <option>出发站</option>
+            </select>
+            <!--<input type="search" id="txtArrivalStation" placeholder="到达站" />-->
+            <select id="slArrivalStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
+                    data-filter-placeholder="到达站" data-icon="search" data-filter="true" data-inline="false">
+                <option>到达站</option>
+            </select>
+        </div>
+        <div data-role="fieldcontain">
+            <input type='date' id='txtSetOutDate' data-role='datebox'
+                   data-options='{"mode": "calbox", "dateFormat": "YYYY-mm-dd","afterToday":true,"maxDays":10}'
+                   placeholder="出发日期"/>
+        </div>
+        <div data-role="fieldcontain">
+            <input type="text" id="txtTrainNumber" placeholder="出发车次"/>
+        </div>
+        <button id="btnSearch">查询</button>
+    </div>
     <script type="text/javascript">
         var ticketStationArr;
         $('#searchPage').live('pageinit', function () {
             initTicketStations();
             generateStations('#slSetOutStation');
             generateStations('#slArrivalStation');
-            $('#btnSearch').bind('click',search);
+            $('#btnSearch').bind('click', search);
         });
 
         function initTicketStations() {
@@ -61,16 +106,16 @@
 
         function filterSearch(keyWord) {
             var searchResults = [];
-            if (keyWord != undefined || keyWord != null || typeof(ticketStationArr) != 'undefined'){
-                searchResults = $.map(ticketStationArr,function(cityItemArr){
-                    if((cityItemArr[0]+cityItemArr[1]).indexOf(keyWord) == -1)return null;
-                    return {label:cityItemArr[1],text:cityItemArr[3]};
+            if (keyWord != undefined || keyWord != null || typeof(ticketStationArr) != 'undefined') {
+                searchResults = $.map(ticketStationArr, function (cityItemArr) {
+                    if ((cityItemArr[0] + cityItemArr[1]).indexOf(keyWord) == -1)return null;
+                    return {label:cityItemArr[1], text:cityItemArr[3]};
                 });
             }
             return searchResults;
         }
 
-        function search(){
+        function search() {
             var searchUrl = 'https://dynamic.12306.cn/otsweb/order/querySingleAction.do?method=queryLeftTicket';
             var queryParams = {};
             queryParams['orderRequest.train_date'] = $('#txtSetOutDate').val().trim();
@@ -88,44 +133,12 @@
                 type:'get',
                 data:queryParams,
                 dataType:'text',
-                success:function(result){
+                success:function (result) {
                     alert(result);
                 }
             });
         }
     </script>
-    <style type="text/css">
-        .ui-select {
-            margin:5px auto;
-        }
-    </style>
-</head>
-<body>
-<div id="searchPage" data-role="page" data-transition="slidedown">
-    <div data-role="header"><h1>车票查询</h1></div>
-    <div data-role="content">
-        <div data-role="fieldcontain">
-            <!--<input type="search" id="txtSetOutStation" placeholder="出发站" />-->
-            <select id="slSetOutStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
-                    data-filter-placeholder="出发站" data-icon="search" data-filter="true" data-inline="false">
-                <option>出发站</option>
-            </select>
-            <!--<input type="search" id="txtArrivalStation" placeholder="到达站" />-->
-            <select id="slArrivalStation" data-native-menu="false" data-force-dialog="true" data-native-menu="false"
-                    data-filter-placeholder="到达站" data-icon="search" data-filter="true" data-inline="false">
-                <option>到达站</option>
-            </select>
-        </div>
-        <div data-role="fieldcontain">
-            <input type='date' id='txtSetOutDate' data-role='datebox'
-                   data-options='{"mode": "calbox", "dateFormat": "YYYY-mm-dd","afterToday":true,"maxDays":10}'
-                   placeholder="出发日期"/>
-        </div>
-        <div data-role="fieldcontain">
-            <input type="text" id="txtTrainNumber" placeholder="出发车次"/>
-        </div>
-        <button id="btnSearch">查询</button>
-    </div>
 </div>
 <div id="stationsPage" data-role="page" data-transition="fade">
     <!--<select id="slStations" data-native-menu="false" data-force-dialog="true" data-native-menu="false" data-filter="true">
